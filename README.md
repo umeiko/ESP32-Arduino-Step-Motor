@@ -1,5 +1,5 @@
 # 基于ESP32的多轴步进电机驱动
-
+![image](https://user-images.githubusercontent.com/58870893/148882930-f6acc04c-e79b-4672-80e1-9f1399f3573d.png)
 
 基于ESP32的PWM功能驱动步进电机
 使用Arduino编写
