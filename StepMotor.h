@@ -6,19 +6,25 @@ class StepMotor{
         StepMotor(uint8_t, uint8_t, uint8_t); //类的构造函数，与类名相同
         void motorSpeed(double);
         void strokeInit(uint8_t, uint8_t, uint8_t);
+        void updateDistance(float);
         void loop_strokeChecker();
         uint8_t dirState;
         double  nowFreq;
-        int32_t nowDistance=0;
+        int64_t nowDistance=0;
     private:
+        //-------------电机与PWM通道所使用的变量-------------------
         uint8_t motorChannel;
         uint8_t dirPin;
         uint8_t pulPin;
+        //--------------为限位开关功能使用的变量--------------------
         uint8_t positivePin;
         uint8_t negativePin;
         uint8_t strokeOnPinMode  = HIGH;  // 限位开关为“触发”时这个管脚的状态
         uint8_t positivePinValue = 0;
         uint8_t negativePinValue = 0;
+        //---------------为计时器更新位置使用的变量-----------------
+        float dir_ = -1;              // 方向标识符
+        int   dx_  =  0;              // 时间微分
 };
 
 StepMotor :: StepMotor(uint8_t Pul, uint8_t Dir, uint8_t motorChannel){
@@ -28,8 +34,8 @@ StepMotor :: StepMotor(uint8_t Pul, uint8_t Dir, uint8_t motorChannel){
     this->pulPin = Pul;
     pinMode(dirPin, OUTPUT);
     digitalWrite(dirPin, LOW);
-    ledcSetup(motorChannel, 0, 10);
-    ledcAttachPin(Pul, motorChannel);
+    ledcSetup(this->motorChannel, 0, 10);
+    ledcAttachPin(Pul, this->motorChannel);
 }
 
 void StepMotor :: motorSpeed(double freq_Speed){
@@ -49,8 +55,8 @@ void StepMotor :: motorSpeed(double freq_Speed){
 
 void StepMotor :: strokeInit(uint8_t positivePin, uint8_t negativePin, uint8_t strokeOnPinMode=HIGH){
     // 初始化限位开关
-    pinMode(positivePin, OUTPUT);
-    pinMode(negativePin, OUTPUT);
+    pinMode(positivePin, INPUT_PULLUP);
+    pinMode(negativePin, INPUT_PULLUP);
     this->positivePinValue = digitalRead(positivePin);
     this->negativePinValue = digitalRead(negativePin);
     this->positivePin = positivePin;
@@ -93,6 +99,23 @@ void StepMotor :: loop_strokeChecker(){
     }
     // 更新限位状态
     this->positivePinValue = now_positive;
-    this->positivePinValue = now_negative;
+    this->negativePinValue = now_negative;
+    // Serial2.print(positivePin);
+    // Serial2.print(':');
+    // Serial2.print(positivePinValue);
+    // Serial2.print('\t');
+    // Serial2.print(negativePin);
+    // Serial2.print(':');
+    // Serial2.println(negativePinValue);
+}
+
+void StepMotor :: updateDistance(float dt){
+    dir_ = -1;
+    if(dirState){
+        dir_ = 1;
+    }
+    // 结果为整形，但是为了提升精度：100,005代表100.005，表示的脉冲数附带了小数点后三位的结果。
+    dx_ = (int)(nowFreq * dt * 1000 * dir_);
+    nowDistance = nowDistance + dx_;
 }
 #endif
