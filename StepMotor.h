@@ -41,15 +41,19 @@ StepMotor :: StepMotor(uint8_t Pul, uint8_t Dir, uint8_t motorChannel){
 void StepMotor :: motorSpeed(double freq_Speed){
     // 设置电机的速度
     // 只有没有触发限位时才有效
-    if(freq_Speed>0 && positivePin!=strokeOnPinMode){
+    if(freq_Speed>0 && positivePinValue!=strokeOnPinMode){
         digitalWrite(dirPin, HIGH);
         this->dirState = HIGH;
         this->nowFreq = abs(freq_Speed);
         ledcWriteTone(motorChannel, nowFreq);
     }
-    else if (freq_Speed<0 && negativePin!=strokeOnPinMode){
+    else if (freq_Speed<0 && negativePinValue!=strokeOnPinMode){
         digitalWrite(dirPin, LOW);
         this->dirState = LOW;
+        this->nowFreq = abs(freq_Speed);
+        ledcWriteTone(motorChannel, nowFreq);
+    }
+    if (freq_Speed == 0){
         this->nowFreq = abs(freq_Speed);
         ledcWriteTone(motorChannel, nowFreq);
     }
