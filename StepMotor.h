@@ -44,13 +44,15 @@ void StepMotor :: motorSpeed(double freq_Speed){
     if(freq_Speed>0 && positivePin!=strokeOnPinMode){
         digitalWrite(dirPin, HIGH);
         this->dirState = HIGH;
+        this->nowFreq = abs(freq_Speed);
+        ledcWriteTone(motorChannel, nowFreq);
     }
     else if (freq_Speed<0 && negativePin!=strokeOnPinMode){
         digitalWrite(dirPin, LOW);
         this->dirState = LOW;
+        this->nowFreq = abs(freq_Speed);
+        ledcWriteTone(motorChannel, nowFreq);
     }
-    this->nowFreq = abs(freq_Speed);
-    ledcWriteTone(motorChannel, nowFreq);
 }
 
 void StepMotor :: strokeInit(uint8_t positivePin, uint8_t negativePin, uint8_t strokeOnPinMode=HIGH){
