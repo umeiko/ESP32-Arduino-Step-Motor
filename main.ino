@@ -19,7 +19,7 @@ void size64Writer(int64_t msg64){
     uint8_t buffer = 0;
     for(uint8_t i=0; i<8; i++){
         buffer = msg64 >> i * 8;
-        Serial.write(buffer);
+        Serial2.write(buffer);
     }
 }
 
@@ -56,10 +56,10 @@ void req_deal(String req){
         
     }
     else if (req.substring(0, 1) == "?"){
-        Serial.print("::");
+        Serial2.print("::");
         size64Writer(motor_0.nowDistance);
         size64Writer(motor_1.nowDistance);
-        Serial.print("\n");
+        Serial2.print("\n");
     }
     else if (req.substring(0, 1) == "!"){
         motor_0.motorSpeed(0);
