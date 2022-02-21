@@ -34,7 +34,8 @@ StepMotor :: StepMotor(uint8_t Pul, uint8_t Dir, uint8_t motorChannel){
     this->pulPin = Pul;
     pinMode(dirPin, OUTPUT);
     digitalWrite(dirPin, LOW);
-    ledcSetup(this->motorChannel, 0, 10);
+    ledcSetup(this->motorChannel, 1, 10);
+    ledcWriteTone(this->motorChannel, 0);
     ledcAttachPin(Pul, this->motorChannel);
 }
 
