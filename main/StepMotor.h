@@ -34,7 +34,8 @@ StepMotor :: StepMotor(uint8_t Pul, uint8_t Dir, uint8_t motorChannel){
     this->pulPin = Pul;
     pinMode(dirPin, OUTPUT);
     digitalWrite(dirPin, LOW);
-    ledcSetup(this->motorChannel, 0, 10);
+    ledcSetup(this->motorChannel, 1, 10);
+    ledcWriteTone(this->motorChannel, 0);
     ledcAttachPin(Pul, this->motorChannel);
 }
 
@@ -106,13 +107,6 @@ void StepMotor :: loop_strokeChecker(){
     // 更新限位状态
     this->positivePinValue = now_positive;
     this->negativePinValue = now_negative;
-    // Serial2.print(positivePin);
-    // Serial2.print(':');
-    // Serial2.print(positivePinValue);
-    // Serial2.print('\t');
-    // Serial2.print(negativePin);
-    // Serial2.print(':');
-    // Serial2.println(negativePinValue);
 }
 
 void StepMotor :: updateDistance(float dt){

@@ -1,4 +1,5 @@
 #include <Ticker.h>
+#include "StepMotor.h"
 
 Ticker counter_timer;  // 用计时器来中断来实时更新电机位置
 float dt = 0.001;       // 1ms计算一次电机位置
@@ -13,13 +14,15 @@ void IRAM_ATTR distanceCounter(){
     // 计时器触发的回调函数，计算一个时间微分内的电机位置变化量
     motor_0.updateDistance(dt);
     motor_1.updateDistance(dt);
+    motor_2.updateDistance(dt);
 }
 
-void size64Writer(int64_t msg64){
+void size64Writer(HardwareSerial serialPort, int64_t msg64){
+    // 将64位的数据通过串口发送出去
     uint8_t buffer = 0;
     for(uint8_t i=0; i<8; i++){
         buffer = msg64 >> i * 8;
-        Serial2.write(buffer);
+        serialPort.write(buffer);
     }
 }
 
@@ -27,11 +30,11 @@ void size64Writer(int64_t msg64){
 void setup(){
     Serial.begin(115200);
     Serial.setTimeout(5);
-    Serial2.begin(115200);
+    Serial2.begin(115200, SERIAL_8N1, 9, 10);
     Serial2.setTimeout(5);
 
-    motor_0.strokeInit(18, 5, LOW);
-    motor_1.strokeInit(19, 23, LOW);
+    // motor_0.strokeInit(18, 5, LOW);
+    // motor_1.strokeInit(19, 23, LOW);
 
     counter_timer.attach(dt, distanceCounter);
     Serial.println("等待指令中");
@@ -56,10 +59,11 @@ void req_deal(String req){
         
     }
     else if (req.substring(0, 1) == "?"){
-        Serial2.print("::");
-        size64Writer(motor_0.nowDistance);
-        size64Writer(motor_1.nowDistance);
-        Serial2.print("\n");
+        Serial.print("::");
+        size64Writer(Serial, motor_0.nowDistance);
+        size64Writer(Serial, motor_1.nowDistance);
+        size64Writer(Serial, motor_2.nowDistance);
+        Serial.print("\n");
     }
     else if (req.substring(0, 1) == "!"){
         motor_0.motorSpeed(0);
@@ -74,8 +78,8 @@ void req_deal(String req){
 
 
 void loop(){
-    motor_0.loop_strokeChecker();
-    motor_1.loop_strokeChecker();
+    // motor_0.loop_strokeChecker();
+    // motor_1.loop_strokeChecker();
 
     if (Serial.available()) {
         req = Serial.readStringUntil('\n');

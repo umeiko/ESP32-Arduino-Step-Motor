@@ -1,0 +1,6 @@
+{
+    "port": "COM3",
+    "configuration": "PartitionScheme=default,UploadSpeed=921600,DebugLevel=none",
+    "board": "esp32:esp32:pico32",
+    "sketch": "main\\main.ino"
+}
