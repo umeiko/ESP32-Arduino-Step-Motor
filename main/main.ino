@@ -32,10 +32,10 @@ void setup(){
     Serial.setTimeout(5);
     Serial2.begin(115200, SERIAL_8N1, 9, 10);
     Serial2.setTimeout(5);
-
+    // 启用限位开关：开关A, 开关B, 触发电平
     // motor_0.strokeInit(18, 5, LOW);
     // motor_1.strokeInit(19, 23, LOW);
-
+    
     counter_timer.attach(dt, distanceCounter);
     Serial.println("等待指令中");
     Serial2.println("等待指令中");
@@ -78,6 +78,7 @@ void req_deal(String req){
 
 
 void loop(){
+    // 启用限位开关在主循环中进行检查
     // motor_0.loop_strokeChecker();
     // motor_1.loop_strokeChecker();
 
